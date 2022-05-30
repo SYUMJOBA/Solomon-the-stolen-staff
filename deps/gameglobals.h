@@ -11,16 +11,16 @@ const char* GAME_LORE_PERGAMENE = "\
 |                                                                  |      \
  |                         The Stolen Staff                        |      \
  |                                                                  |     \
- |      \"God wanted one man,                                        |     \
-  |       Gifted by god himself to be the wisest man alive,           |   \
-  |       Who ruled gracefully,                                       |   \
-  |       Gifting peace and prosperity to every peasant,              |   \
-  |       Who did not even ask,                                       |   \
-   |       Giving back his respect to the mighty ruler Solomon,        |  \
-   |       Who subsequently built the envy of Judas,                   |  \
-   |       Who one day,                                                |  \
-   |       Stole the mighty staff,                                     |  \
-   |       Wich Solomon once held with pride.\"                         |  \
+ |      \"In the bountiful land of Caanan                            |     \
+  |       once ruled a bright old man                                |    \
+  |       Solomon his name, and great his fame,                      |    \
+  |       no other king was ever the same.                           |    \
+  |       To lead his people on the right path,                      |    \
+   |       god granted him a wondrous staff.                          |   \
+   |       It brought him riches untold                               |   \
+   |       and dazzling mountains of gold                             |   \
+   |       Until Judas, the traitor, out of spite                     |   \
+   |       stole it to challenge the lord's might.\"                   |  \
   |                                              _____________________|   \
   |  ___________________-------------------------                      `\\ \
   |/`--_                                                                 |\
@@ -37,6 +37,9 @@ typedef struct Vec2f {
     long double Y;
 } Vec2f, *PVec2f;
 
+int GAME_CURRENT_LEVEL = 0;
+int GAME_HIGHEST_LEVEL = 0;
+
 #define screen_height 30
 #define screen_width 120
 
@@ -44,16 +47,16 @@ typedef struct Vec2f {
 #define GAME_MAP_WIDTH 128
 
 
-#define maxChests 6
+#define max_mapChests 6
 #define game_totalMaterials 64
 #define max_mapTraps 20
 #define maxItems_chestContainer 30
 #define maxItems_barrelContainer 30
 #define maxItems_inventory 20
 
-#define maxMapItems 240
+#define max_mapItems 240
 
-#define maxMapEntities 40
+#define max_mapEntities 40
 #define total_gameEntites 40
 
 #define total_gameStructures 40

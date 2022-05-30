@@ -1,11 +1,15 @@
 #pragma once
 #define isPosAdj(pos1, pos2)  ( ( abs(pos1.X - pos2.X) + abs(pos1.Y - pos2.Y) ) == 1 ) //if the two position are touching each other (not diagonally) it returns TRUE, else, FALSE
-#define Vec2diff(pos1, pos2) ( abs(pos1.X - pos2.X) + abs(pos1.Y - pos2.Y) )
-#define Vec2mul(pos, fac)   {pos.X*fac, pos.Y*fac}
-#define Vec2sum(pos1, pos2) {pos1.X+pos2.X, pos1.Y+pos2.Y}
+#define Vec2diff(pos1, pos2)    ( abs(pos1.X - pos2.X) + abs(pos1.Y - pos2.Y) )
+#define Vec2mul(pos, fac)       {pos.X*fac, pos.Y*fac}
+#define Vec2sum(pos1, pos2)     {pos1.X+pos2.X, pos1.Y+pos2.Y}
 
 #define toVec2(vec) {(int)vec.X, (int)vec.Y}
 #define toVec2f(vec) {(double)vec.X, (double)vec.Y}
+
+#ifndef max
+#define max(a, b) (a > b ? a : b)
+#endif
 
 const long double SINCOS_TABLE[] = {
  (long double)0.0,
@@ -98,7 +102,7 @@ const long double SINCOS_TABLE[] = {
  (long double)0.9986295347545738,
  (long double)0.9993908270190958,
  (long double)0.9998476951563913,
- (long double)1 }; //stores 1 fourth of the full sin function results, from 0° to 90°
+ (long double)1 }; //stores 1 fourth of the full sin function results, from 0ï¿½ to 90ï¿½
 //length : 90+1
 long double sin(int angle) //feed the degrees in the function
 {
@@ -118,7 +122,7 @@ long double cos(int angle) //feed the degrees in the function
 }
 
 //Lehmer for random number generation
-unsigned long int nLehmer_seed = 0;
+unsigned long long int nLehmer_seed = 0;
 unsigned long long int LehmerRand() {
     nLehmer_seed += 0xe120fc15;
     unsigned long long int tmp;

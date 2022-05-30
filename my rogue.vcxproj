@@ -142,8 +142,41 @@
     <ClCompile Include="my rogue.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="deps\colors.h" />
     <ClInclude Include="deps\console_engine.h" />
+    <ClInclude Include="deps\crafting.h" />
+    <ClInclude Include="deps\debugginglogs.h" />
+    <ClInclude Include="deps\entity.h" />
+    <ClInclude Include="deps\filemanager.h" />
+    <ClInclude Include="deps\gameglobals.h" />
+    <ClInclude Include="deps\gameplay.h" />
+    <ClInclude Include="deps\items.h" />
+    <ClInclude Include="deps\keys.h" />
+    <ClInclude Include="deps\level.h" />
+    <ClInclude Include="deps\map.h" />
+    <ClInclude Include="deps\mapGeneration.h" />
+    <ClInclude Include="deps\materials.h" />
+    <ClInclude Include="deps\moremath.h" />
+    <ClInclude Include="deps\player.h" />
+    <ClInclude Include="deps\screen.h" />
     <ClInclude Include="deps\spawners.h" />
+    <ClInclude Include="deps\sprites.h" />
+    <ClInclude Include="deps\structures.h" />
+    <ClInclude Include="deps\ui.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitattributes" />
+    <None Include=".gitignore" />
+    <None Include="a.exe" />
+    <None Include="cool.save" />
+    <None Include="coolgame.save" />
+    <None Include="deps\readme.md" />
+    <None Include="game.save" />
+    <None Include="go.save" />
+    <None Include="h.save" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="debug.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

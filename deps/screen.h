@@ -44,7 +44,7 @@ BOOL setupConsole()
 
 void updateScreen()
 {
-    WriteConsoleOutput(h, game_screen, write_size, write_start, &write_region);
+    WriteConsoleOutputW(h, game_screen, write_size, write_start, &write_region);
 
     write_region.Right = screen_width;
     write_region.Bottom = screen_height;
@@ -184,7 +184,7 @@ void paintRectangle(CHAR_INFO data, Vec2 Vertex1, Vec2 Vertex2)
     }
 }
 
-//My edit of the DDA line drawing algorythm
+//My edit of the DDA line tracing algorythm (had to perfect an issue with the relative numbers)
 void paintDDALine(CHAR_INFO data, Vec2 start, Vec2 finish)
 {
     int dx = abs(finish.X - start.X);
@@ -523,8 +523,16 @@ void drawWallWorldTile(Vec2 screenPosition, Vec2 worldPosition)
         }
         case wallTiletype_door:
         {
-            game_screen[screenLocation].Attributes = (getBgColor(GAME_MATERIALS[tile.materialID].color)) + Fg_Black;
-            game_screen[screenLocation].Char.UnicodeChar = (char)0xb3; // + '│';
+            if (GAME_WALLS[mapLocation].state == doorState_closed)
+            {
+                game_screen[screenLocation].Attributes = (getBgColor(GAME_MATERIALS[tile.materialID].color)) + Fg_Black;
+                game_screen[screenLocation].Char.UnicodeChar = (char)0xb3; // + '│';
+            }
+            else {
+                game_screen[screenLocation].Attributes = (getBgColor(GAME_MATERIALS[tile.materialID].color)) + Fg_Black;
+                game_screen[screenLocation].Char.UnicodeChar = '.'; // + '.'; opened door
+
+            }
             break;
         }
         case wallTiletype_chest:

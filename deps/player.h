@@ -46,7 +46,7 @@ void setupPlayer()
 {
     for (int i = 0; i < 20; i++)
     {
-        player.inventory[i].type = -1;
+        player.inventory[i] = createItem(itemType_noItem, material_noMaterial, itemQuality_legendary );
     }
     player.boots.type = itemType_noItem;
     player.leggins.type = itemType_noItem;
@@ -63,9 +63,9 @@ void setupPlayer()
 
     //player.fullness = 20;
     //player.thirst = 20;
-    player.maxHealth = 20;
-    player.health = 20;
-    player.baseMaxHealth = 20;
+    player.maxHealth = 100;
+    player.health = 70;
+    player.baseMaxHealth = 100;
 
     for (int i = 0; i < 8; i++)
     {
@@ -91,16 +91,16 @@ int getPlayerInventoryLength()
 }
 void removeItemFromInventory(int id) // removes the item located at that position in the inventory
 {
-    if (getPlayerInventoryLength() > id)
-        if (id == maxItems_inventory)
-            player.inventory[id].type = itemType_noItem;
-        else
+    if (id == maxItems_inventory - 1)
+    {
+        player.inventory[id] = createItem(itemType_noItem, material_noMaterial, itemQuality_legendary);
+    }
+    else {
+        for (int i = id; i < getPlayerInventoryLength(); i++)
         {
-            for (int i = id; i < getPlayerInventoryLength(); i++)
-            {
-                player.inventory[i] = player.inventory[i + 1];
-            }
+            assignItem(&player.inventory[i], player.inventory[i + 1]);
         }
+    }
 }
 int findItemFromInventory(Item item)
 {
@@ -116,8 +116,10 @@ BOOL addItemToInventory(Item item) // return TRUE if operation is succesfull, FA
     int invLen = getPlayerInventoryLength();
     if (invLen < maxItems_inventory)
     {
-        assignItem(&player.inventory[invLen], item);
+        player.inventory[invLen] = item;
         return TRUE;
+        if (invLen != maxItems_inventory - 1)
+            player.inventory[invLen + 1] = createItem(itemType_noItem, material_noMaterial, 0);
     }
     else
     {

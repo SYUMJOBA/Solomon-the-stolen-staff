@@ -11,7 +11,7 @@ void setupGame()
     setupConsole();
     setupMaterials();
     setupPlayer();
-    setupMap();
+    clearMap();
     map_clear();
     InitStructures();
     setupCrafting();
@@ -185,19 +185,20 @@ BOOL pickUpItemFromGround(){
     int playerLocation = player.position.X + player.position.Y * GAME_MAP_WIDTH;
     //check if there is an item on the player's tile
     if (GAME_GROUND[playerLocation].containedID != -1)
-    {
+
         //check if the item isn't actually null
         if (MAP_ITEMS[GAME_GROUND[playerLocation].containedID].type != itemType_noItem)
-        {
+        
             //attempt adding the item to the player
-            Item mapItem = MAP_ITEMS[GAME_GROUND[playerLocation].containedID];
-            if(addItemToInventory(mapItem)){
+            if (addItemToInventory(MAP_ITEMS[GAME_GROUND[playerLocation].containedID]))
+            {
                 removeItemFromMap(player.position);
                 return TRUE;
             }
-        }
+            
         
-    }
+        
+    
     return FALSE;
 }
 BOOL dropItemOnGrund(int itemID){
@@ -396,6 +397,27 @@ void drawPixelInWorld(CHAR_INFO data, Vec2 worldPosition)
 }
 void interrogateMapLocation(Vec2 position)
 { // prints on the screen useful data on what is present in position `Vec2 position`
+
+    Vec2 windowStart;
+    Vec2 cursorHelperScreenPos = Vec2sum(cursorHelper.position, mapToScreenOffset);
+    if (cursorHelperScreenPos.X > screen_width/2)
+    {
+        windowStart.X = 0;
+    }
+    else {
+        windowStart.X = screen_width - 36;
+    }
+
+    if (cursorHelperScreenPos.Y > screen_height/2)
+    {
+        windowStart.Y = 0;
+    }
+    else {
+        windowStart.Y = screen_height - 7;
+    }
+    Vec2 windowSize = { 36, 7 };
+    Vec2 windowEnd = Vec2sum(windowStart, windowSize);
+
     if (GAME_WALLS[position.Y*GAME_MAP_WIDTH+position.X].type == wallTiletype_noWall)
     {
         WorldTile floorTile = GAME_GROUND[position.Y*GAME_MAP_WIDTH+position.X];
@@ -403,14 +425,14 @@ void interrogateMapLocation(Vec2 position)
         char stringBuffer[32] = "";
         strcat(stringBuffer, GAME_MATERIALS[floorTile.materialID].name);
         strcat(stringBuffer, " ");
-        strcat(stringBuffer, getGroundTypeFromEnum(floorTile.type));
-        blankWindow({0, 0}, {36, 7});
-        coloredText(stringBuffer, color, {2, 2});
+        strcat(stringBuffer, getGroundTypeFromEnum(floorTile.type)); 
+        blankWindow(windowStart, windowEnd);
+        coloredText(stringBuffer, color, {2 + windowStart.X, 2 + windowStart.Y});
         stringBuffer[0] = '\0';
         char itoaStringBuffer[4] = "";
         if (floorTile.containedID != itemType_noItem)
         {
-            showItemFullName(MAP_ITEMS[floorTile.containedID], {1, 3});
+            showItemFullName(MAP_ITEMS[floorTile.containedID], {1 + windowStart.X, 3 + windowStart.Y});
         }
         //render entity
         Entity entity = getEntityFromPosition(position);
@@ -425,10 +447,10 @@ void interrogateMapLocation(Vec2 position)
                         ),
                         _itoa(eamount, itoaStringBuffer, 10)
                     ),
-                    GAME_ENTITIES[entity.entityType].color, {2, 4})
-                : coloredText(GAME_ENTITIES[entity.entityType].name, GAME_ENTITIES[entity.entityType].color, {2, 4});
+                    GAME_ENTITIES[entity.entityType].color, {2 + windowStart.X, 4 + windowStart.Y})
+                : coloredText(GAME_ENTITIES[entity.entityType].name, GAME_ENTITIES[entity.entityType].color, {2 + windowStart.X, 4 + windowStart.Y});
         if (getSpawnerFromMapPosition(position) != NULL)
-            coloredText("Beware! A spawner", Fg_Fucsia, { 2, 5 });
+            coloredText("Beware! A spawner", Fg_Fucsia, { 2 + windowStart.X, 5 + windowStart.Y});
 
     } else {
         WorldTile wallTile = GAME_WALLS[position.Y*GAME_MAP_WIDTH+position.X];
@@ -437,20 +459,20 @@ void interrogateMapLocation(Vec2 position)
         strcat(wallTileDetails, GAME_MATERIALS[wallTile.materialID].name);
         strcat(wallTileDetails, " ");
         strcat(wallTileDetails, getWallTypeFromEnum(wallTile.type));
-        blankWindow({0, 0}, {36, 4});
-        coloredText(wallTileDetails, color, {2, 2});
+        blankWindow(windowStart, windowEnd);
+        coloredText(wallTileDetails, color, {2 + windowStart.X, 2 + windowStart.Y});
         if (collidesWithMap(position))
         {
             if (wallTile.containedID != material_noMaterial)
             {
-                coloredText(GAME_MATERIALS[wallTile.containedID].name, toFgColor(GAME_MATERIALS[wallTile.containedID].color), {2, 3});
-                coloredText("ore", toFgColor(GAME_MATERIALS[wallTile.containedID].color), {3+(int)strlen(GAME_MATERIALS[wallTile.containedID].name), 3});
+                coloredText(GAME_MATERIALS[wallTile.containedID].name, toFgColor(GAME_MATERIALS[wallTile.containedID].color), {2 + windowStart.X, 3 + windowStart.Y});
+                coloredText("ore", toFgColor(GAME_MATERIALS[wallTile.containedID].color), {3+(int)strlen(GAME_MATERIALS[wallTile.containedID].name) + windowStart.X, 3 + windowStart.Y});
             }
         }
     }
     if (position.X == player.position.X && position.Y == player.position.Y)
     {
-        coloredText("Here we have you!", Fg_White, {1, 1});
+        coloredText("Here we have you!", Fg_White, {1 + windowStart.X, 1 + windowStart.Y});
     }
     
 }
@@ -499,7 +521,7 @@ void renderPlayerPerspective()
             case vismap_tileSeen:
             {
                 drawWorldPosition({ x, y }, worldPosition);
-                collidesWithMap(worldPosition) ? paintPixel((Attribute)(Bg_Olive_Green | Fg_Black), { x, y }) : paintPixel(Fg_Olive_Green, { x, y });
+                collidesWithMap(worldPosition) ? paintPixel((Attribute)(Bg_Dark_Blue | Fg_Black), { x, y }) : paintPixel(Fg_Dark_Blue, { x, y });
             }
             break;
 
@@ -581,7 +603,7 @@ void renderScene()
     }
 
     //draw the entities
-    for (int i = 0; i < maxMapEntities; i++)
+    for (int i = 0; i < max_mapEntities; i++)
     {
         if (MAP_ENTITIES[i].entityType != entityType_nothing)
             drawPixelInWorld({ (WCHAR)GAME_ENTITIES[MAP_ENTITIES[i].entityType].sprite, GAME_ENTITIES[MAP_ENTITIES[i].entityType].color }, MAP_ENTITIES[i].position);
@@ -651,7 +673,7 @@ void printChestItems(int chestID, Vec2 startPosition){
 //player-chest related functions
 BOOL moveItemFromChestToInventory(int chestId, int itemId)
 {
-    if (getChestInventoryLength(chestId) < itemId)
+    if (getChestInventoryLength(chestId) > itemId)
         if (addItemToInventory(MAP_CHESTS[chestId].items[itemId]))
         {
             removeItemFromChest(chestId, itemId);
@@ -661,7 +683,7 @@ BOOL moveItemFromChestToInventory(int chestId, int itemId)
 }
 BOOL moveItemFromInventoryToChest(int chestId, int itemId)
 {
-    if (getPlayerInventoryLength() < itemId)
+    if (getPlayerInventoryLength() > itemId)
         if (addItemToChest(chestId, player.inventory[itemId]))
         {
             removeItemFromInventory(itemId);
@@ -743,40 +765,45 @@ void renderhintsUI(){
     coloredText("Press H to hide this window", Fg_White, {screen_width-38, screen_height-2});
     coloredText("E", Fg_Lime_Green, {columnX, 5});
     coloredText("C", Fg_Lime_Green, {columnX, 6});
-    coloredText("U", Fg_Lime_Green, {columnX, 7});
+    //coloredText("U", Fg_Lime_Green, {columnX, 7});
     coloredText("P", Fg_Lime_Green, {columnX, 8});
-    coloredText("X", Fg_Lime_Green, {columnX, 9});
-    coloredText("B", Fg_Lime_Green, {columnX, 10});
-    coloredText("K", Fg_Lime_Green, {columnX, 11});
+    //coloredText("X", Fg_Lime_Green, {columnX, 9});
+    //coloredText("B", Fg_Lime_Green, {columnX, 10});
+    //coloredText("K", Fg_Lime_Green, {columnX, 11});
     coloredText("L", Fg_Lime_Green, {columnX, 12});
+    coloredText("S", Fg_Lime_Green, { columnX, 13 });
 
 
     coloredText("-", Fg_Green, {columnX+1, 5});
     coloredText("-", Fg_Green, {columnX+1, 6});
-    coloredText("-", Fg_Green, {columnX+1, 7});
+    //coloredText("-", Fg_Green, {columnX+1, 7});
     coloredText("-", Fg_Green, {columnX+1, 8});
-    coloredText("-", Fg_Green, {columnX+1, 9});
-    coloredText("-", Fg_Green, {columnX+1, 10});
-    coloredText("-", Fg_Green, {columnX+1, 11});
+    //coloredText("-", Fg_Green, {columnX+1, 9});
+    //coloredText("-", Fg_Green, {columnX+1, 10});
+    //coloredText("-", Fg_Green, {columnX+1, 11});
     coloredText("-", Fg_Green, {columnX+1, 12});
+    coloredText("-", Fg_Green, {columnX+1, 13});
+
 
 
     coloredText("inventory", Fg_White, {columnX+2, 5});
     coloredText("open chest", Fg_White, {columnX+2, 6});
-    coloredText("interact", Fg_White, {columnX+2, 7});
+    //coloredText("interact", Fg_White, {columnX+2, 7});
     coloredText("pick up item", Fg_White, {columnX+2, 8});
-    coloredText("crafting", Fg_White, {columnX+2, 9});
-    coloredText("building", Fg_White, {columnX+2, 10});
-    coloredText("attack", Fg_White, {columnX+2, 11});
+    //coloredText("crafting", Fg_White, {columnX+2, 9});
+    //coloredText("building", Fg_White, {columnX+2, 10});
+    //coloredText("attack", Fg_White, {columnX+2, 11});
     coloredText("look", Fg_White, {columnX+2, 12});
+    coloredText("search", Fg_White, { columnX + 2, 13 });
+
 
 
     coloredText("ArrowKeys", Fg_Lime_Green, {columnX, 14});
-    coloredText("move", Fg_White, {columnX+11, 15});
+    coloredText("move/attack/open door/mine", Fg_White, {columnX+4, 15});
 
-    coloredText("I", Fg_Lime_Green, {columnX, 16});
-    coloredText("-", Fg_Green, {columnX+1, 16});
-    coloredText("info (player)", Fg_White, {columnX+2, 16});
+    //coloredText("I", Fg_Lime_Green, {columnX, 16});
+    //coloredText("-", Fg_Green, {columnX+1, 16});
+    //coloredText("info (player)", Fg_White, {columnX+2, 16});
     stringBuffer[0] = '\0';
     int i2 = 0;
     for (int i = 0; i < 8; i++)
@@ -791,6 +818,10 @@ void renderhintsUI(){
     }
    coloredText("Affected by: ", Fg_White, { columnX, 18 });
    if (i2 == 0) coloredText(" None", Fg_Grey, { columnX, 19 });
+
+   coloredText("Look for equipment, mine the walls,", Fg_White, { columnX, 24 });
+   coloredText("scavenge the surroundings till you", Fg_White, { columnX, 25 });
+   coloredText("find the STOLEN STAFF!", Fg_White, { columnX, 26 });
 }
 
 //crafting-visual related functions
@@ -936,7 +967,7 @@ example : using the item means CONSUMING it, such in a way tha a potion gets dru
 //game cycle related fucntions
 void gameOver()
 {
-    deleteFile(GAME_FILENAME);
+    deleteFile();
     while (true)
     {
         blankWindow({ 10, 5 }, { screen_width - 10, screen_height - 5 });
@@ -946,11 +977,24 @@ void gameOver()
     }
 }
 
+void gameWon()
+{
+    while (true)
+    {
+        blankWindow({ 10, 5 }, { screen_width - 10, screen_height - 5 });
+        coloredText("CONGRATULATIONS! YOU WON!", Fg_Red, { 20, 7 });
+        coloredText("your journey ends here, and you return home with", Fg_Lime_Green, { 20, 11 });
+        coloredText("majesty and wisdom wich can be seen from far beyond", Fg_Lime_Green, { 20, 12 });
+        coloredText("you fially retrieved the stolen staff!", Fg_Lime_Green, { 20, 10 });
+
+        updateScreen();
+    }
+}
 
 void worldStep() //calculate all of the AI's, liquid, physics and etc ... workings
 {
-    //here there will be AI
-    for (int i = 0; i < maxMapEntities; i++)
+    //AI function call
+    for (int i = 0; i < max_mapEntities; i++)
     {
         if (MAP_ENTITIES[i].entityType != entityType_nothing)
             runEntityAI(&MAP_ENTITIES[i]);
@@ -960,4 +1004,21 @@ void worldStep() //calculate all of the AI's, liquid, physics and etc ... workin
     player.maxHealth = player.baseMaxHealth + getPlayerEnchantPowerSum(enchantType_healthBoost); //keep in check the player's maximum health
     player.health = clamp(0, player.health, player.maxHealth);
     updateSpawners();
+    int i = 0;
+    while (i < getPlayerInventoryLength() && player.inventory[i].type != itemType_stolenStaff)
+    {
+        i++;
+    }
+    if (i < getPlayerInventoryLength())
+    {
+        gameWon();
+    }
+    PTrap trap = getTrapFromPosition(player.position);
+    if (trap != NULL)
+    {
+        addEnchantToPlayer(trap->effect);
+        trap->effect = createEnchant(enchantType_none, 0, 0);
+        trap->position = { -1, -1 };
+    }
+    updatePlayerVOF();
 }

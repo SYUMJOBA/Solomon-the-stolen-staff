@@ -31,6 +31,7 @@
 #define itemType_roughGem 26
 #define itemType_rock 27
 #define itemType_shield 28
+#define itemType_stolenStaff 29
 
 //char ITEMS_NAME_REGISTER[]; //all the names of items in the game (se we can avoid using long enum functions that take up a lot of compputin power)
 
@@ -85,6 +86,7 @@ BOOL ENCHANT_POSITIVITY_REGISTER[32] = { 0, FALSE, FALSE, FALSE, FALSE, FALSE, T
         underChest  : 12
         underLegg   : 13
         underBoot   : 14
+        ... just look the defs
 */
 
 typedef struct Enchantment
@@ -106,7 +108,7 @@ typedef struct Enchantment
 
 // Enchant colors, each Enchant has a color assosciated with it
 CHAR_INFO ENCHANTS_DECOS[32] = { {'\\', 0}, {'s', Fg_Lime_Green | Bg_Green}, {char_star, Fg_Yellow | Bg_Red}, {'o', Fg_Black | Bg_White}, {char_upSlope, Fg_Grey | Bg_White}, {char_asterisc, Fg_White | Bg_Light_Blue}, {char_heart, Fg_Red | Bg_Bordeaux}, {(char)0x18, Fg_Yellow | Bg_Green}, {(WCHAR)char_udnerLinedO, Fg_Lime_Green | Bg_Yellow}, {(WCHAR)']', Fg_Light_Blue | Bg_Blue}, {(WCHAR)241, Fg_Yellow | Bg_Lime_Green}, {char_heart, Fg_Yellow | Bg_Red}, {(WCHAR)'\'', Fg_White | Bg_Dark_Blue}};
-const char ITEMS_SPRITES[64] = {'0', '/', '|', char_upArrow, char_moreOrEqual, char_alpha, char_delta, '#', '#', '#', '#', '#', '#', '#', '#', char_rectangle, char_rombus, char_degree, char_asterisc, char_infinite, materialSprite_flesh, char_threeParallelLines, char_dollar, char_udnerLinedO, char_tau, (char)169, char_star, char_shiftLeft, ']'};
+const char ITEMS_SPRITES[64] = {'0', '/', '|', char_upArrow, char_moreOrEqual, char_alpha, char_delta, '#', '#', '#', '#', '#', '#', '#', '#', char_rectangle, char_rombus, char_degree, char_asterisc, char_infinite, materialSprite_flesh, char_threeParallelLines, char_dollar, char_udnerLinedO, char_tau, (char)169, char_star, char_shiftLeft, ']', char_downCone};
 // Items sprites (indexed by the item types)
 
 typedef struct Item
@@ -127,14 +129,15 @@ typedef struct ChestItemContainer
     Item items[maxItems_chestContainer]; // Act as ID (pointer) to GAME_ITEMS
 } ChestItemContainer, *PChestItemContainer;
 
+//slated for removal or update
 typedef struct BarrelItemContainer
 {
     BOOL isUsed;                          // flag that specifies wether or not the barrel is being used
     Item items[maxItems_barrelContainer]; // Act as ID (pointer) to GAME_ITEMS
 } BarrelItemContainer, *PBarrelItemContainer;
 
-Item MAP_ITEMS[maxMapItems];                 // Register for all the items in the map
-ChestItemContainer MAP_CHESTS[maxChests];    // Register for all the chsts
+Item MAP_ITEMS[max_mapItems];                 // Register for all the items in the map
+ChestItemContainer MAP_CHESTS[max_mapChests];    // Register for all the chsts
 //BarrelItemContainer MAP_BARRELS[maxBarrels]; // Register for all the barrels ::: SLATED FOR FUTURE UPDATE (chests are enough)
 
 void assignItem(Item * destination, Item source){
@@ -212,11 +215,11 @@ BOOL areItemsEqual(Item item1, Item item2){
 }
 void setupItems()
 {
-    for (int i = 0; i < maxMapItems; i++)
+    for (int i = 0; i < max_mapItems; i++)
     {
         MAP_ITEMS[i].type = -1;
     }
-    for (int i = 0; i < maxChests; i++)
+    for (int i = 0; i < max_mapChests; i++)
     {
         for (int j = 0; j < maxItems_chestContainer; j++)
         {
@@ -516,11 +519,11 @@ int getChestInventoryLength(int chestId)
 int addNewChest()
 { // returns the index of the new chest, -1 if unsuccesful
     int i = 0;
-    while (i < maxChests && MAP_CHESTS[i].isUsed == TRUE)
+    while (i < max_mapChests && MAP_CHESTS[i].isUsed == TRUE)
     {
         i++;
     }
-    if (i < maxChests)
+    if (i < max_mapChests)
     {
         MAP_CHESTS[i].isUsed = TRUE;
         for (int h = 0; h < maxItems_chestContainer; h++)
@@ -602,7 +605,7 @@ void transferNegativeEnchants(Enchantment* source, Enchantment* destination)
 {
     for (int i = 0; i < 8; i++)
     {
-        if (isEnchantNegative(source[i].enchantID))
+        if (isEnchantNegative(source[i].enchantID) && rand()%100 <= source[i].certainity)
             addEnchantToArray(source[i], destination);
     }
 }

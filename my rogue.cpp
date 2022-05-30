@@ -1,5 +1,6 @@
 #include "deps/console_engine.h"
 
+
 int main(int argc, char const* argv[])
 {
     setupGame();
@@ -105,27 +106,51 @@ int main(int argc, char const* argv[])
         }
         else if (gameState_newGame == GAME_CHOICE)
         {
-            char adventurer_name[32] = "";
 
             BOOL entered = FALSE;
             while (gameState_newGame == GAME_CHOICE)
             {
                 coloredText("Who will be the next adventurer?", Fg_White, { 1, 2 });
-                textField(adventurer_name, { 2, 3 });
+                textField(GAME_FILENAME, { 2, 3 });
 
                 uiKeyButton("Press ENTER to confirm", Input(Key_ENTER), Fg_Green, Fg_Lime_Green, &entered, TRUE, { 2, 5 });
-                uiKeyButton("Press ESCto go back", Input(Key_ESCAPE), Fg_Grey, Fg_White, &GAME_CHOICE, gameState_menu, { 2, 6 });
+                uiKeyButton("Press ESC to go back", Input(Key_ESCAPE), Fg_Grey, Fg_White, &GAME_CHOICE, gameState_menu, { 2, 6 });
 
                 if (entered)
                 {
-                    BOOL result = writeFileFromGame(adventurer_name);
+                    int allowance = waiting_forwritingPermission;
+                    BOOL result = writeFileFromGame(FALSE);
                     while (entered)
                     {
-                        if (result)
+                        if (result == file_success)
                         {
                             largeTextBox("File was created!", Fg_Lime_Green);
                             uiKeyButton("Press E to embark!", Input(Key_E), Fg_Green, Fg_Lime_Green, &GAME_CHOICE, gameState_playing, { 4, 10 });
+                            writeFileFromGame(TRUE);
                             entered = GAME_CHOICE == gameState_playing ? FALSE : TRUE;
+                        }
+                        else if (result == file_trouble)
+                        {
+                            while (allowance == waiting_forwritingPermission)
+                            {
+                                int n_keyState = Input(Key_N);
+                                int y_keyState = Input(Key_Y);
+                                blankWindow({ 10, 10 }, { screen_width - 10, screen_height - 10 });
+                                coloredText("A file with this name is already present", Fg_White, { 14, 12 });
+                                coloredText("Proceeding will overwrite everything!", Fg_Red, { 14, 13 } );
+                                coloredText("            are you sure you want to proceed?", Fg_Grey, { 14, 17 } );
+                                uiKeyButton("Press Y to proceed", y_keyState, Fg_Bordeaux, Fg_Red, &allowance, can_overWrite, { 14, 19 });
+                                uiKeyButton("Press N to go back", n_keyState, Fg_Green, Fg_Lime_Green, &allowance, cannot_overWrite, { 40, 19 });
+                                if (n_keyState == key_just_released || y_keyState == key_just_released)
+                                {
+                                    //here the game, levels and stuff gets 
+                                    entered = FALSE;
+                                    if (y_keyState == key_just_released) { createDemoLevel(); GAME_CHOICE = gameState_playing; updatePlayerVOF(); }
+
+                                    writeFileFromGame(allowance);
+                                }
+                                updateScreen();
+                            }
                         }
                         else
                         {
@@ -133,6 +158,12 @@ int main(int argc, char const* argv[])
                             uiKeyButton("Press ESC to go back", Input(Key_ESCAPE), Fg_Bordeaux, Fg_Red, &entered, FALSE, { 4, 10 });
                         }
                         updateScreen();
+                    }
+                    if (result == file_success)
+                    {
+                        createDemoLevel();
+                        updatePlayerVOF();
+                        writeFileFromGame(TRUE);
                     }
                 }
                 updateScreen();
@@ -153,7 +184,7 @@ int main(int argc, char const* argv[])
 
                 if (entered)
                 {
-                    BOOL loadResult = loadFileInGame(GAME_FILENAME);
+                    BOOL loadResult = loadFileInGame();
                     while (entered)
                     {
                         if (loadResult)
@@ -220,6 +251,8 @@ int main(int argc, char const* argv[])
                 coloredText("For more, you can contact me at: ", Fg_Light_Grey, { 7, 9 });
                 coloredText("syumjoba@gmail.com", Fg_Light_Blue, { 10, 10 });
 
+                coloredText("Special thanks to Leonardo Ronchi for his work on the lore", Fg_Yellow, { 7, 17 });
+
                 coloredText("adjust the instagram logo size with 'u', 'm', 'h' and 'k' keys!", Fg_White, {50, 10});
                 coloredText("(I'm serious), try it", Fg_Grey, {50, 11});
                 if (x != 3 || y != 3)
@@ -237,29 +270,6 @@ int main(int argc, char const* argv[])
         else if (GAME_CHOICE == gameState_playing)
         {
             // Playing
-            player.position = { 5, 5 };
-
-            int chest_location = placeNewChest({ 3, 6 }, material_cherryWood); // material wood
-            addItemToChest(chest_location, { 0, 1, -1 });
-
-            for (int y = 10; y < 20; y++)
-            {
-                for (int x = 10; x < 20; x++)
-                {
-                    GAME_WALLS[y * GAME_MAP_WIDTH + x].type = 1;
-                    GAME_WALLS[y * GAME_MAP_WIDTH + x].containedID = -1;
-                    GAME_WALLS[y * GAME_MAP_WIDTH + x].materialID = 0;
-                }
-            }
-            for (int y = 25; y < 35; y++)
-            {
-                for (int x = 40; x < 50; x++)
-                {
-                    GAME_WALLS[y * GAME_MAP_WIDTH + x].type = wallTiletype_roughWall;
-                    GAME_WALLS[y * GAME_MAP_WIDTH + x].materialID = material_dolomite;
-                    GAME_WALLS[y * GAME_MAP_WIDTH + x].containedID = material_gold;
-                }
-            }
 
             // Enumerator for what the player is doing in the game right now
             PLAYER_ACTION = 1;
@@ -270,59 +280,13 @@ int main(int argc, char const* argv[])
                 3 : attacking
                 4 : inventory
             */// NOTE : everything is defined in the amazing gameplayer.h header in full detail
-            Item coolPick = createItem(itemType_pickaxe, material_platinum, itemQuality_pristine);
-            addEnchantToItem(&coolPick, createEnchant(enchantType_efficiency, 8, 10));
-            addEnchantToItem(&coolPick, createEnchant(enchantType_luck, 4, 10));
-            addItemToMap(coolPick, { 10, 2 });
-            addItemToMap(createItem(itemType_axe, material_platinum, itemQuality_fine), { 10, 6 });
-            addItemToMap(createItem(itemType_chestplate, material_gold, itemQuality_pristine), { 15, 3 });
-            addItemToMap(createItem(itemType_pickaxe, material_dolomite, itemQuality_regular), { 2, 3 });
-            addItemToMap(createItem(itemType_pickaxe, material_platinum, itemQuality_regular), { 3, 3 });
 
-            Item coolArmor = createItem(itemType_chestplate, material_platinum, itemQuality_high);
-            addEnchantToItem(&coolArmor, createEnchant(enchantType_fiery, 7, 7));
-            addEnchantToItem(&coolArmor, createEnchant(enchantType_teleporting, 3, 6));
-            addItemToMap(coolArmor, { 30, 8 });
-            coolArmor.type = itemType_helmet;
-            addItemToMap(coolArmor, { 30, 9 });
-            coolArmor.type = itemType_leggins;
-            addEnchantToItem(&coolArmor, createEnchant(enchantType_regeneration, 4, 10));
-            addItemToMap(coolArmor, { 30, 10 });
-            coolArmor.type = itemType_boots;
-            addItemToMap(coolArmor, { 30, 11 });
-            // add some armor items and test them in the new menu
-
-            addStructureToMap(createStructure(structureType_craftingStation, { 30, 6 }));
-            addStructureToMap(createStructure(structureType_furnaceStation, { 30, 13 }));
-
-            addItemToMap(createItem(itemType_logs, material_birchWood, itemQuality_fine), { 40, 4 });
-            addItemToMap(createItem(itemType_logs, material_birchWood, itemQuality_fine), { 40, 5 });
-            addItemToMap(createItem(itemType_logs, material_cherryWood, itemQuality_fine), { 40, 6 });
-            addItemToMap(createItem(itemType_logs, material_birchWood, itemQuality_fine), { 40, 7 });
-            addItemToMap(createItem(itemType_rock, material_flint, itemQuality_fine), { 40, 8 });
-
-            addEntityToMap(createEntity(entityType_troll, { 40, 5 }));
-            addEntityToMap(createEntity(entityType_spider, { 32, 9 }));
-
-            addSpawner(createSpawner(entityType_goblin, 6, 0, { 12, 3 }, 3, 0));
-            Item coolBottle = createItem(itemType_bottle, material_glass, itemQuality_fine);
-            addEnchantToItem(&coolBottle, createEnchant(enchantType_freezing, 3, 7));
-            addItemToMap(coolBottle, {3, 2});
-
-            for (int y = 0; y < 10; y++)
-            {
-                for (int x = 0; x < 10; x++)
-                {
-                    GAME_WALLS[(y + 20) * GAME_MAP_WIDTH + (x + 60)] = createWorldTile(wallTiletype_roughWall, material_cherryWood, material_noMaterial, 0);
-                }
-            }
 
             int inventoryChoice = 0; // stores a temporary index that points to an item in the player's inventory
             int chestChoice = 0;     // stores a temporary index that points to the chest that the player is interacting with
             int craftingStructureChoice = structureType_noStructure; //since the structures do not have storage, the stored ID here is the structure TYPE.
             while (gameState_playing == GAME_CHOICE)
             {
-                updatePlayerVOF();
                 drawPixelInWorld({ char_filledFace, Fg_White }, player.position); // paint the player in the screen
                 // registering the key states
 
@@ -339,15 +303,36 @@ int main(int argc, char const* argv[])
                         paintText("Resume game", { 14, 10 });
                         paintText("Go to stats", { 14, 12 });
                         paintText("Exit to menu", { 14, 14 });
-                        paintRectangle(Fg_Grey, { 14, 10 }, { 30, 14 });
+                        paintText("Save game", { 14, 16 });
+                        paintRectangle(Fg_Grey, { 14, 10 }, { 30, 16 });
                         paintLine(Fg_White, { 14, 10 + miniMenuChoice * 2 }, 20);
                         if (Input(Key_ESCAPE) == key_just_released)
                             miniMenu = FALSE;
 
-                        if (indexMenuArrow({ 12, 10 }, 3, &miniMenuChoice, Fg_Light_Blue))
+                        if (indexMenuArrow({ 12, 10 }, 4, &miniMenuChoice, Fg_Light_Blue))
                         {
                             switch (miniMenuChoice)
                             {
+                            case 3:
+                            {
+                                int result = writeFileFromGame(can_overWrite);
+                                while (miniMenuChoice == 3)
+                                {
+
+                                    blankWindow({ 20, 10 }, { screen_width - 20, screen_height - 10 });
+                                    if (result == file_success)
+                                    {
+                                        coloredText("Game has beed saved", Fg_Lime_Green, { 30, 12 });
+                                    }
+                                    else {
+                                        coloredText("Something went wrong, try again later", Fg_Bordeaux, { 30, 12 });
+                                    }
+                                    uiKeyButton("Press ESC to go back", Input(Key_ESCAPE), Fg_Grey, Fg_White, &miniMenuChoice, 0, { 30, 19 });
+                                    updateScreen();
+
+                                }
+                            }
+                                break;
                             case 2:
                                 GAME_CHOICE = gameState_menu;
                                 miniMenu = FALSE;
@@ -411,11 +396,16 @@ int main(int argc, char const* argv[])
                             }
                             else
                             {
+                                if (getMapWall(newPos.X, newPos.Y).type == wallTiletype_door)
+                                {
+                                    getMapWall(newPos.X, newPos.Y).state = doorState_open;
+                                }
                                 attemptMiningWall(newPos);
                             }
                         else
                             worldStep();
-                    if (Input(Key_DOT) == key_just_pressed) if (getEntityIDFromPosition(player.position) != operation_failed) attackEntity(getEntityAddressFromPosition(player.position));
+                    if (Input(Key_5) == key_just_pressed || Input(Key_Z) == key_just_pressed) if (getEntityIDFromPosition(player.position) != operation_failed) attackEntity(getEntityAddressFromPosition(player.position));
+                    if (Input(Key_DOT) == key_just_pressed) worldStep();
 
                     updateMapToScreenOffset({ player.position.X - mapToScreenOffset.X, player.position.Y - mapToScreenOffset.Y });
                 }
@@ -431,11 +421,9 @@ int main(int argc, char const* argv[])
                         }
 
                         Vec2 cursorMotion = calculateVec2FromKeys(Input(Key_UP), Input(Key_DOWN), Input(Key_LEFT), Input(Key_RIGHT));
-                        if (getVismapTile(cursorHelper.position.X + cursorMotion.X * cursorSpeed, cursorHelper.position.Y + cursorMotion.Y * cursorSpeed) == vismap_tileInView)
-                        {
-                            cursorHelper.position.X += cursorMotion.X * cursorSpeed;
-                            cursorHelper.position.Y += cursorMotion.Y * cursorSpeed;
-                        }
+                        Vec2 newCursorPos = { cursorHelper.position.X + cursorMotion.X * cursorSpeed, cursorHelper.position.Y + cursorMotion.Y * cursorSpeed };
+                        if ( getVismapTile(newCursorPos.X, newCursorPos.Y) == vismap_tileInView)
+                            cursorHelper.position = newCursorPos;
 
                         cursorHelper.position = clampPosition(mapToScreenOffset, cursorHelper.position, { mapToScreenOffset.X + screen_width - 1, mapToScreenOffset.Y + screen_height - 1 });
                         interrogateMapLocation(cursorHelper.position);
@@ -642,7 +630,7 @@ int main(int argc, char const* argv[])
                             playerItemsAmount == 0 ? coloredText("No items to pick here", Fg_Grey, { screen_width - 52, 7 }) : uiKeyButton("->", enter_keyState, Fg_Purple, Fg_Fucsia, NULL, 0, { screen_width - 52, playerInventoryChoice % 12 + 8 });
 
 
-                        if (enter_keyState == key_just_pressed)
+                        if (enter_keyState == key_just_released)
                             if (sideChosen == 0)
                             {
                                 if (moveItemFromChestToInventory(chestChoice, chestInventoryChoice))
@@ -723,6 +711,9 @@ int main(int argc, char const* argv[])
                     break;
 
                 case player_interacting:
+                    {
+
+
                     screenCapture();
                     //go through all the present structures in the map, and if the player is in one of them (exactly in the center) then open the 
                     //specified crafting menu for that structure specifically 
@@ -732,6 +723,7 @@ int main(int argc, char const* argv[])
                         updateScreen();
                     }
                     unScreenCapture();
+                    }
                     break;
 
 
@@ -771,12 +763,26 @@ int main(int argc, char const* argv[])
                     }
                 }
 
+                if (Input(Key_S) == key_just_pressed)
+                {
+                    for (int p = 0; p < 9; p++)
+                    {
+                        Vec2 lookDir = {p%3-1, p/3-1};
+                        if (NULL != getTrapFromPosition(Vec2sum(player.position, lookDir)))
+                            getTrapFromPosition(Vec2sum(player.position, lookDir))->discovered = TRUE;
+                    }
+                    worldStep();
+                    worldStep();
+                    worldStep();
+                }
+
+                /* THESE FEATURES ARE SLATED FOR FUTURE UPDATE
                 if (Input(Key_B) == key_just_released) PLAYER_ACTION = player_building;
                 if (Input(Key_X) == key_just_released) PLAYER_ACTION = player_crafting;
                 if (Input(Key_U) == key_just_released) {
 
                 }
-
+                */
                 if (player.health <= 0)
                 {
                     gameOver();

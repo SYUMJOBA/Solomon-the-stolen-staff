@@ -29,5 +29,76 @@
     <ClInclude Include="deps\spawners.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="deps\level.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\mapGeneration.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\materials.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\moremath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\screen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\sprites.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\structures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\ui.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\keys.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\crafting.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\debugginglogs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\entity.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\filemanager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\gameglobals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\gameplay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\items.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\colors.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="deps\map.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="deps\readme.md" />
+    <None Include=".gitattributes" />
+    <None Include=".gitignore" />
+    <None Include="a.exe" />
+    <None Include="cool.save" />
+    <None Include="coolgame.save" />
+    <None Include="game.save" />
+    <None Include="go.save" />
+    <None Include="h.save" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="debug.txt" />
   </ItemGroup>
 </Project>
