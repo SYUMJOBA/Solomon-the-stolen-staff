@@ -15,6 +15,7 @@
 #define material_delganium 12 //endgame metal
 #define material_birchWood 13
 #define material_insectoid 14
+#define material_quartz 15
 
 #define materialType_VOID 0
 #define materialType_wood 1
@@ -23,6 +24,7 @@
 #define materialType_metal 4
 #define materialtype_water 5
 #define materialType_organic 6
+#define materialType_gem 7
 
 typedef struct Material
 {
@@ -303,6 +305,13 @@ void setupMaterials()
     strcpy(GAME_MATERIALS[14].name, "insectoid");
     GAME_MATERIALS[14].flags = createMaterialProps(FALSE, FALSE, FALSE, FALSE, 5, TRUE, TRUE, TRUE, FALSE, 4, materialType_organic, TRUE);
     GAME_MATERIALS[14].rawItemID = itemType_shards;
+
+    GAME_MATERIALS[15].color = Bg_White | Fg_Grey;
+    GAME_MATERIALS[15].symbol = '\'';
+    strcpy(GAME_MATERIALS[15].name, "quartz");
+    GAME_MATERIALS[15].flags = createMaterialProps(FALSE, FALSE, FALSE, FALSE, 7, TRUE, FALSE, TRUE, FALSE, 9, materialType_gem, FALSE);
+    GAME_MATERIALS[15].rawItemID = itemType_roughGem;
+    
 }
 
 const char *getMaterialTypeFromEnum(int type)
@@ -311,35 +320,30 @@ const char *getMaterialTypeFromEnum(int type)
     {
     case materialtype_water:
         return "waterlike ";
-        break;
 
     case materialType_glass:
         return "glasslike ";
-        break;
 
     case materialType_organic:
         return "organic ";
-        break;
 
     case materialType_rock:
         return "rocky ";
-        break;
 
     case materialType_wood:
         return "wooden ";
-        break;
 
     case materialType_metal:
         return "metallic ";
-        break;
+
+    case materialType_gem:
+        return "gemlike";
 
     case materialType_VOID:
         return "VOID ";
-        break;
 
     default:
         return "W - H - A - T? ";
-        break;
     }
 }
 int getItemForMaterialType(int materialType){
@@ -347,22 +351,20 @@ int getItemForMaterialType(int materialType){
     {
     case materialtype_water:
         return -1;
-        break;
     
     case materialType_glass:
         return itemType_shards;
-        break;
 
     case materialType_metal:
         return itemType_metalNugget;
-        break;
     
     case materialType_rock:
         return itemType_stoneBoulder;
-        break;
+
+    case materialType_gem:
+        return itemType_roughGem;
 
     default:
         return -1;
-        break;
     }
 }

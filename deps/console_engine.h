@@ -35,7 +35,7 @@ Syumjoba console's game engine
 #include "spawners.h"       //Library that adds spawners to the game, so you can procedurally add spawners, and not entites, this makes your life SOOOO EASIER (remember : that's why the Twilight Forest always used spawners, not spawnrules)
 #include "screen.h"         //Library for graphics
 #include "ui.h"             //Library for UI and quick interfaces
-#include "level.h"          //Library that simplifies incredibly the process of loading and saving games
+#include "level.h"          //Library that simplifies incredibly the process of loading and saving games // EDIT : it overflows stack, so nevermind
 #include "mapGeneration.h"  //Library for proceduralGeneration
 #include "filemanager.h"    //Library for loading and saving the data
 #include "gameplay.h"       //foundamental library for crucial useful things that wrap the game engine complexity, make the code mroe readable and help the dev to not deteriorate his parent relationship

@@ -144,7 +144,8 @@ Vec2 calculateVec2FromKeys(int upInput, int downInput, int leftInput, int rightI
     }
     return resultant;
 }
-void movePlayer(int upInput, int downInput, int leftInput, int rightInput){
+void movePlayer(int upInput, int downInput, int leftInput, int rightInput)
+{
     if (upInput == key_just_released)
     {
         if (!collidesWithMap({player.position.X, player.position.Y-1}))
@@ -175,13 +176,15 @@ void movePlayer(int upInput, int downInput, int leftInput, int rightInput){
         }
     }
 }
-void printInventoryItems(Vec2 startPosition){
+void printInventoryItems(Vec2 startPosition)
+{
     for (int i = 0; i < getPlayerInventoryLength(); i++)
     {
         showItemInfo(player.inventory[i], {startPosition.X, startPosition.Y+i});
     }
 }
-BOOL pickUpItemFromGround(){
+BOOL pickUpItemFromGround()
+{
     int playerLocation = player.position.X + player.position.Y * GAME_MAP_WIDTH;
     //check if there is an item on the player's tile
     if (GAME_GROUND[playerLocation].containedID != -1)
@@ -201,7 +204,8 @@ BOOL pickUpItemFromGround(){
     
     return FALSE;
 }
-BOOL dropItemOnGrund(int itemID){
+BOOL dropItemOnGrund(int itemID)
+{
     if (addItemToMap(player.inventory[itemID], player.position))
     {
         removeItemFromInventory(itemID);
@@ -209,7 +213,8 @@ BOOL dropItemOnGrund(int itemID){
     }
     return FALSE;
 }
-void printEquipmentItems(Vec2 startPosition){
+void printEquipmentItems(Vec2 startPosition)
+{
     coloredText("head    :", Fg_White, startPosition);
     coloredText("torso   :", Fg_White, {startPosition.X , startPosition.Y+1});
     coloredText("leggins :", Fg_White, {startPosition.X , startPosition.Y+2});
@@ -395,17 +400,18 @@ void drawPixelInWorld(CHAR_INFO data, Vec2 worldPosition)
         paintPixel(data, {worldPosition.X - mapToScreenOffset.X, worldPosition.Y - mapToScreenOffset.Y});
     }
 }
-void interrogateMapLocation(Vec2 position)
+void lookTool(Vec2 position)
 { // prints on the screen useful data on what is present in position `Vec2 position`
 
-    Vec2 windowStart;
+    Vec2 windowStart = {0, 0};
+    Vec2 windowSize = { 36, 7 };
     Vec2 cursorHelperScreenPos = Vec2sum(cursorHelper.position, mapToScreenOffset);
     if (cursorHelperScreenPos.X > screen_width/2)
     {
         windowStart.X = 0;
     }
     else {
-        windowStart.X = screen_width - 36;
+        windowStart.X = screen_width - windowSize.X;
     }
 
     if (cursorHelperScreenPos.Y > screen_height/2)
@@ -413,11 +419,13 @@ void interrogateMapLocation(Vec2 position)
         windowStart.Y = 0;
     }
     else {
-        windowStart.Y = screen_height - 7;
+        windowStart.Y = screen_height - windowSize.Y;
     }
-    Vec2 windowSize = { 36, 7 };
-    Vec2 windowEnd = Vec2sum(windowStart, windowSize);
+    Vec2 windowEnd = {windowStart.X + windowSize.X-1, windowStart.Y + windowSize.Y-1};
 
+    blankWindow(windowStart, windowEnd);
+
+    
     if (GAME_WALLS[position.Y*GAME_MAP_WIDTH+position.X].type == wallTiletype_noWall)
     {
         WorldTile floorTile = GAME_GROUND[position.Y*GAME_MAP_WIDTH+position.X];
@@ -451,7 +459,6 @@ void interrogateMapLocation(Vec2 position)
                 : coloredText(GAME_ENTITIES[entity.entityType].name, GAME_ENTITIES[entity.entityType].color, {2 + windowStart.X, 4 + windowStart.Y});
         if (getSpawnerFromMapPosition(position) != NULL)
             coloredText("Beware! A spawner", Fg_Fucsia, { 2 + windowStart.X, 5 + windowStart.Y});
-
     } else {
         WorldTile wallTile = GAME_WALLS[position.Y*GAME_MAP_WIDTH+position.X];
         Attribute color = toFgColor(GAME_MATERIALS[wallTile.materialID].color);
@@ -476,7 +483,8 @@ void interrogateMapLocation(Vec2 position)
     }
     
 }
-void updateMapToScreenOffset(Vec2 screenPosition){
+void updateMapToScreenOffset(Vec2 screenPosition)
+{
     if (screenPosition.X > (screen_width/4)*3)
     {
         mapToScreenOffset.X += screen_width/2;
@@ -637,7 +645,8 @@ void debugMapLocation(Vec2 position)
     _itoa(GAME_WALLS[position.Y * GAME_MAP_WIDTH + position.X].materialID, stringBuffer, 10);
     coloredText(stringBuffer, Fg_Grey, {18, 10});
 }
-void displayEnchantInfo(Enchantment * enchantArray, Vec2 startPosition, int arrLen){
+void displayEnchantInfo(Enchantment * enchantArray, Vec2 startPosition, int arrLen)
+{
     int enchantLen = getEnchantsAmountFromArray(enchantArray, arrLen);
     char tmpString[6] = "";
     for (int i = 0; i < enchantLen; i++)
@@ -654,7 +663,8 @@ void displayItemEnchantInfo(Item item, Vec2 startPosition){
 //map only related functions
 
 //map-chests related functions
-void printChestItems(int chestID, Vec2 startPosition){
+void printChestItems(int chestID, Vec2 startPosition)
+{
     int chestLen = 0;
     while (chestLen < maxItems_chestContainer && MAP_CHESTS[chestID].items[chestLen].type != itemType_noItem)
     {
@@ -713,7 +723,8 @@ Item createItemFromWall(WorldTile tile, int luck)
     }
     return returningItem;
 }
-BOOL mineWall(Vec2 mapPosition, int luck){ //returs result of the operation: 0 if not succesfull, 1 if yes
+BOOL mineWall(Vec2 mapPosition, int luck)
+{ //returs result of the operation: 0 if not succesfull, 1 if yes
     //destroy a wall in the map and place an item in the map, the one that should result from `createItemFromWall` function
     Item tmpItem = createItemFromWall(GAME_WALLS[mapPosition.Y*GAME_MAP_WIDTH+mapPosition.X], luck);
     if (isMaterialDestroyable(GAME_MATERIALS[GAME_WALLS[mapPosition.Y*GAME_MAP_WIDTH+mapPosition.X].materialID]))
@@ -724,7 +735,8 @@ BOOL mineWall(Vec2 mapPosition, int luck){ //returs result of the operation: 0 i
     }
     return FALSE;
 }
-BOOL attemptMiningWall(Vec2 mapPosition){
+BOOL attemptMiningWall(Vec2 mapPosition)
+{
     BOOL isToolCorrect;
     BOOL bewoodLike = isMaterialWoodLike(GAME_MATERIALS[getWorldTile(mapPosition, onWalls).materialID]);
     if (bewoodLike)
@@ -753,16 +765,31 @@ BOOL attemptMiningWall(Vec2 mapPosition){
 
 //ui related functions and values
 BOOL shouldRender_hintsUI = TRUE;
-void renderhintsUI(){
-    int columnX = screen_width-36;
-    blankWindow({screen_width-40, 1}, {screen_width-1, screen_height-2});
+void renderhintsUI()
+{
+    Vec2 renderingOffset = { 0, 0 };
+    if (PLAYER_ACTION == player_looking)
+    {
+        if (cursorHelper.position.X > screen_width/2)
+        {
+            renderingOffset.X = screen_width - (screen_width - 40);
+        }
+    }
+    else {
+        if (player.position.X > screen_width / 2)
+        {
+            renderingOffset.X = screen_width - (screen_width - 40);
+        }
+    }
+    int columnX = screen_width-36 + renderingOffset.X;
+    blankWindow({screen_width-40+renderingOffset.X, 1}, {renderingOffset.X+ screen_width-1, screen_height-2});
     coloredText("Player health", Fg_White, {columnX, 2});
     char stringBuffer[16] = "";
     coloredText(_itoa(player.health, stringBuffer, 10), Fg_Red, { columnX+1, 3 });
     coloredText("\\", Fg_Red, { columnX + 4, 3 });
     coloredText(_itoa(player.maxHealth, stringBuffer, 10), Fg_Red, { columnX + 8, 3 });
 
-    coloredText("Press H to hide this window", Fg_White, {screen_width-38, screen_height-2});
+    coloredText("Press H to hide this window", Fg_White, {screen_width-38 + renderingOffset.X, screen_height-2});
     coloredText("E", Fg_Lime_Green, {columnX, 5});
     coloredText("C", Fg_Lime_Green, {columnX, 6});
     //coloredText("U", Fg_Lime_Green, {columnX, 7});

@@ -203,7 +203,8 @@ typedef struct ColoredLine{
 } ColoredLine, *PColoredLine;
 ColoredLine lastAnnouncement;
 
-void showLastAnnouncement(){
+void showLastAnnouncement()
+{
     int i = 0;
     if (strcmp(lastAnnouncement.text, "") != 0)
     {
@@ -215,7 +216,8 @@ void showLastAnnouncement(){
         }
     }
 }
-void updateLastAnnouncmenet(const char * newText, Attribute newColor){
+void updateLastAnnouncmenet(const char * newText, Attribute newColor)
+{
     strcpy(lastAnnouncement.text, newText);
     lastAnnouncement.color = newColor;
 }
@@ -226,7 +228,8 @@ void blankWindow(Vec2 startPosition, Vec2 endPosition)
     frame(Fg_White, startPosition, endPosition);
 }
 
-void bossBar(Vec2 startPosition, int width, CHAR_INFO fg_char, CHAR_INFO bg_char, int currentAmount, int maxAmount){
+void bossBar(Vec2 startPosition, int width, CHAR_INFO fg_char, CHAR_INFO bg_char, int currentAmount, int maxAmount)
+{
     // currentAmount : maxAmount = bossBarFilling : width => bossBarFilling = (width*currentAmount)/maxAmount
 
     for (int x = startPosition.X; x < startPosition.X+width; x++)

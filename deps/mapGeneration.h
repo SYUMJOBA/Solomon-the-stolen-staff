@@ -2,7 +2,6 @@
 
 void createDemoLevel()
 {
-    player.position = { 6, 6 };
 	clearMap();
 	clearTraps();
     createRoom({ 10, 10 }, { 10, 10 }, doorSideRight, wallTiletype_roughWall, material_dolomite, groundTiletype_smoothGround, material_birchWood);
@@ -22,11 +21,11 @@ void createDemoLevel()
 
     for (int i = 0; i < 20; i++)
     {
-        createRoom({ rand() % 20 + 10 * 10, rand() % 60 }, { rand() % 10 + 2, rand() % 10 + 2 }, rand() % 4, rand() % 2, rand() % 4, rand() % 2, rand() % 3);
+        createRoom( { rand() % 20 + 10 * 10, rand() % 60 }, { rand() % 10 + 2, rand() % 10 + 2 }, rand() % 4, rand() % 2+1, rand() % 4, rand() % 2+1, rand() % 3);
         Item item = createItem(rand() % 25, rand() % 10, rand() % 7);
         if (rand()% 6< 2)
         { 
-            addEnchantToItem(&item, createEnchant(rand() % 12, rand() % 3, rand() % 6));
+            addEnchantToItem(&item, createEnchant(rand() % 12+1, rand() % 3+1, rand() % 6+1));
         }
         addItemToMap(item, { rand() % 20 + 10 * 10, rand() % 60 });
     }
@@ -37,7 +36,8 @@ void createDemoLevel()
     {
         for (int x = 0; x < GAME_MAP_WIDTH; x++)
         {
-            getMapWall(x, i) = createTile(rand() % 2, rand() % 2, rand() % 20 < 2 ? rand() % 5 : -1, 0);
+            getMapWall(x, i) = createTile(rand() % 2, wallTiletype_roughWall, rand() % 20 < 2 ? rand() % 5 : -1, 0);
+            if (rand() % 20 == 1) {getMapWall(x, i).type = wallTiletype_door; getMapWall(x, i).state = doorState_closed;}
         }
         i += rand() % 20;
     }
@@ -46,7 +46,8 @@ void createDemoLevel()
     {
         for (int y = 0; y < GAME_MAP_HEIGHT; y++)
         {
-            getMapWall(i, y) = createTile(rand() % 2, rand() % 2, rand() % 20 < 2 ? rand() % 5 : -1, 0);
+            getMapWall(i, y) = createTile(rand() % 2, wallTiletype_roughWall, rand() % 20 < 2 ? rand() % 5 : -1, 0);
+            if (rand() % 20 == 1) { getMapWall(i, y).type = wallTiletype_door; getMapWall(i, y).state = doorState_closed; }
         }
         i += rand() % 20;
     }
@@ -63,14 +64,14 @@ void createDemoLevel()
 
     for (int i = 0; i < 10; i++)
     {
-        addSpawner(createSpawner(entityType_spider, 1, 10, { rand() % GAME_MAP_WIDTH, rand() % GAME_MAP_HEIGHT }, rand() % 20, 7));
+        addSpawner(createSpawner(rand()%4+1, 1, 10, {rand() % GAME_MAP_WIDTH, rand() % GAME_MAP_HEIGHT}, rand() % 20, 7));
     }
 
     for (int i = 0; i < 10; i++)
     {
         int chestLocation = placeNewChest({ rand() % 20 + 10 * 10, rand() % 60 }, rand() % 4);
 
-        for (int j = 0; j < rand() % 4; j++)
+        for (int j = 0; j < rand() % 4+1; j++)
         {
             Item item = createItem(rand() % 25, rand() % 10, rand() % 7);
             if (rand() % 6 < 2)
@@ -84,8 +85,15 @@ void createDemoLevel()
     addItemToInventory(createItem(itemType_pickaxe, material_platinum, itemQuality_regular));
     addItemToInventory(createItem(itemType_axe, material_platinum, itemQuality_regular));
 
-    createRoom({ 120, 50 }, { 5, 5 }, doorSideLeft, wallTiletype_smoothWall, material_delganium, groundTiletype_smoothGround, material_platinum);
+    Vec2 goalRoomPos = { rand() % 110 + 10, rand() % 40 + 10 };
+    createRoom({ rand() % 110+10, rand() % 40+10 }, { 5, 5 }, doorSideLeft, wallTiletype_smoothWall, material_delganium, groundTiletype_smoothGround, material_platinum);
     addItemToMap(createItem(itemType_stolenStaff, material_delganium, itemQuality_legendary), {120, 50});
+
+    Vec2 startingPositon = { rand() % (GAME_MAP_WIDTH - 20) + 10, rand() % (GAME_MAP_HEIGHT - 20) + 10 };
+    player.position = startingPositon;
+    createRoom(startingPositon, { 5, 5 }, doorSideBottom, wallTiletype_roughWall, material_quartz, groundTiletype_smoothGround, material_cherryWood);
+    createMapRectangle(startingPositon, { 3, 3 }, onWalls, createTile(material_noMaterial, wallTiletype_noWall, material_noMaterial, 0));
+
 }
 
 void createTestingLevel()

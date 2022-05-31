@@ -21,7 +21,7 @@ SMALL_RECT write_region = {0, 0, screen_width, screen_height};
 #define getPixel(x, y) game_screen[y*screen_width+x]
 
 
-// I'm afrain of a segmentation fault right here ... NAD NO THERE WON'T BE!
+// I'm afraid of a segmentation fault right here ... NAD NO THERE WON'T BE!
 HANDLE h;
 
 CHAR_INFO screenshot_register[screen_height * screen_width];
@@ -529,7 +529,7 @@ void drawWallWorldTile(Vec2 screenPosition, Vec2 worldPosition)
                 game_screen[screenLocation].Char.UnicodeChar = (char)0xb3; // + '│';
             }
             else {
-                game_screen[screenLocation].Attributes = (getBgColor(GAME_MATERIALS[tile.materialID].color)) + Fg_Black;
+                game_screen[screenLocation].Attributes = (toFgColor(GAME_MATERIALS[tile.materialID].color));
                 game_screen[screenLocation].Char.UnicodeChar = '.'; // + '.'; opened door
 
             }

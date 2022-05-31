@@ -153,9 +153,9 @@ void createRoom(Vec2 center, Vec2 size, int doorSide, int wallType, int material
 {
     Vec2 start = { center.X - size.X / 2, center.Y - size.Y / 2 };
     Vec2 end = { center.X + size.X / 2, center.Y + size.Y / 2 };
-    createHollowMapRectangle(center, size, onWalls, createTile(wallType, material, material_noMaterial, 0));
-    createMapRectangle(center, size, onGround, createTile(groundType, groundMaterial, itemType_noItem, 0));
-    WorldTile door = createTile(wallTiletype_door, isMaterialRockLike(GAME_MATERIALS[material]) ? material_dolomite : material_cherryWood, itemType_noItem, doorState_closed);
+    createHollowMapRectangle(center, size, onWalls, createTile(material, wallType, material_noMaterial, 0));
+    createMapRectangle( center, size, onGround, createTile( groundMaterial, groundType, itemType_noItem, 0));
+    WorldTile door = createTile(isMaterialRockLike(GAME_MATERIALS[material]) ? material_dolomite : material_cherryWood, wallTiletype_door, itemType_noItem, doorState_closed);
     switch (doorSide)
     {
     case doorSideBottom:

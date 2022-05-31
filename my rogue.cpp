@@ -1,8 +1,9 @@
 #include "deps/console_engine.h"
-
+#include <time.h>
 
 int main(int argc, char const* argv[])
 {
+    srand(time(NULL));
     setupGame();
 
     BOOL running = TRUE;
@@ -301,8 +302,8 @@ int main(int argc, char const* argv[])
                         frame(Fg_White, { 10, 5 }, { screen_width - 10, screen_height - 5 });
                         coloredText("M I N I   M E N U", Fg_Fucsia, { 16, 8 });
                         paintText("Resume game", { 14, 10 });
-                        paintText("Go to stats", { 14, 12 });
-                        paintText("Exit to menu", { 14, 14 });
+                        paintText("Go to stats (NIY)", { 14, 12 });
+                        paintText("Exit to menu (YOU'LL LOOSE ALL PROGRESS!)", { 14, 14 });
                         paintText("Save game", { 14, 16 });
                         paintRectangle(Fg_Grey, { 14, 10 }, { 30, 16 });
                         paintLine(Fg_White, { 14, 10 + miniMenuChoice * 2 }, 20);
@@ -372,6 +373,7 @@ int main(int argc, char const* argv[])
                 {
                 case player_moving: // player generally going around
                 {
+                    int shift_keyState = Input(Key_SHIFT);
                     Vec2 motion = calculateVec2FromKeys(Input(Key_UP), Input(Key_DOWN), Input(Key_LEFT), Input(Key_RIGHT));
                     Vec2 newPos = { player.position.X + motion.X, player.position.Y + motion.Y };
                     if (!vec2cmp(player.position, newPos))
@@ -385,7 +387,11 @@ int main(int argc, char const* argv[])
                                     {
                                         getSpawnerFromMapPosition(newPos)->hitsTaken++;
                                     }
-                                    player.position = newPos;
+                                    else
+                                        if (getMapWall(newPos.X, newPos.Y).type == wallTiletype_door && shift_keyState)
+                                            getMapWall(newPos.X, newPos.Y).state = doorState_closed;
+                                        else
+                                        player.position = newPos;
                                     worldStep();
                                 }
                                 else
@@ -396,11 +402,16 @@ int main(int argc, char const* argv[])
                             }
                             else
                             {
-                                if (getMapWall(newPos.X, newPos.Y).type == wallTiletype_door)
+                                WorldTile* interestedTile = &getMapWall(newPos.X, newPos.Y);
+                                if (interestedTile->type == wallTiletype_door)
                                 {
-                                    getMapWall(newPos.X, newPos.Y).state = doorState_open;
-                                }
+                                    if (shift_keyState)
+                                    {
+                                        interestedTile->state = doorState_open;
+                                    }
+                                } else
                                 attemptMiningWall(newPos);
+                                worldStep();
                             }
                         else
                             worldStep();
@@ -426,7 +437,7 @@ int main(int argc, char const* argv[])
                             cursorHelper.position = newCursorPos;
 
                         cursorHelper.position = clampPosition(mapToScreenOffset, cursorHelper.position, { mapToScreenOffset.X + screen_width - 1, mapToScreenOffset.Y + screen_height - 1 });
-                        interrogateMapLocation(cursorHelper.position);
+                        lookTool(cursorHelper.position);
                         drawPixelInWorld({ 'X', Fg_Yellow }, cursorHelper.position);
                     }
                 }

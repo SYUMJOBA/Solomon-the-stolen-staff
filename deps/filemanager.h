@@ -85,7 +85,8 @@ void readLevel()
 }
 
 
-BOOL loadFileInGame(){
+BOOL loadFileInGame()
+{
     standardizeFileName( GAME_FILENAME );
     GAME_FILEPOINTER = fopen(GAME_FILENAME, "rb");
     if (NULL != GAME_FILEPOINTER)
