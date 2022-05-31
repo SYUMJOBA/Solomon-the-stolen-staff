@@ -104,7 +104,8 @@ void createMapRectangle(Vec2 center, Vec2 size, int level, WorldTile wt)
         {
             for (int x = 0; x < size.X; x++)
             {
-                getMapGround(x + start.X, y + start.Y) = wt;
+                if (y * GAME_MAP_WIDTH + x < GAME_MAP_WIDTH*GAME_MAP_HEIGHT)
+                    getMapGround(x + start.X, y + start.Y) = wt;
             }
         }
     }

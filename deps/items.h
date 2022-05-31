@@ -125,7 +125,7 @@ typedef struct Item
 
 typedef struct ChestItemContainer
 {
-    BOOL isUsed;                         // flag that specifies wether or not the chest is being used
+    char isUsed;                         // flag that specifies wether or not the chest is being used
     Item items[maxItems_chestContainer]; // Act as ID (pointer) to GAME_ITEMS
 } ChestItemContainer, *PChestItemContainer;
 
@@ -347,9 +347,11 @@ const char *getItemTypeFromEnum(int itemType)
         return "shield";
         break;
 
+    case itemType_stolenStaff:
+        return "stolen staff";
+
     default:
         return "UNDEF";
-        break;
     }
 }
 const char *getQualityTypeFromEnum(int quality)

@@ -889,7 +889,7 @@ unsigned int showMaterialFlagInfo(unsigned int materialFlags, Vec2 position, Att
         strcat(infoBuffer, "smeltable ");
     }
     coloredText(infoBuffer, color, position);
-    return strlen(infoBuffer);
+    return (int)strlen(infoBuffer);
 }
 
 void displayCraftingRecipes(int category, Vec2 startPosition, int step, int height, Item * sourceInventory, int invLength)

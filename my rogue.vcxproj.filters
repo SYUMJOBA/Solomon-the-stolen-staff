@@ -92,13 +92,10 @@
     <None Include=".gitattributes" />
     <None Include=".gitignore" />
     <None Include="a.exe" />
-    <None Include="cool.save" />
-    <None Include="coolgame.save" />
-    <None Include="game.save" />
-    <None Include="go.save" />
-    <None Include="h.save" />
     <None Include="readme.md" />
     <None Include="solomon.save" />
+    <None Include="playdoc\doc.pdf" />
+    <None Include="playdoc\stolen staff doc.html" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="debug.txt" />

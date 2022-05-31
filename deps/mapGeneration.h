@@ -1,9 +1,83 @@
 #pragma once
 
+void wallOut()
+{
+    for (int y = 0; y < GAME_MAP_HEIGHT; y++)
+    {
+            getMapWall(0, y).type = wallTiletype_roughWall;
+            getMapWall(GAME_MAP_WIDTH-1, y).materialID = materialType_VOID;
+    }
+
+    for (int x = 0; x < GAME_MAP_WIDTH; x++)
+    {
+        getMapWall(x, 0).type = wallTiletype_roughWall;
+        getMapWall(x, GAME_MAP_HEIGHT-1).materialID = materialType_VOID;
+
+    }
+}
+
+void clearRegisters()
+{
+    initSpawners();
+    setupPlayer();
+    clearMap();
+    clearTraps();
+    for (int i = 0; i < max_mapEntities; i++)
+    {
+        MAP_ENTITIES[i].entityType = entityType_nothing;
+    }
+
+}
+
+void cleanRegisters()
+{
+    for (int i = 0; i < max_mapItems; i++)
+    {
+        int x = 0;
+        BOOL found = FALSE;
+        while (x < GAME_MAP_WIDTH && !found)
+        {
+            int y = 0;
+            while (y < GAME_MAP_HEIGHT && !found)
+            {
+                if (getMapGround(x, y).containedID == i && (getMapGround(x, y).type == groundTiletype_roughFloor || getMapGround(x, y).type == groundTiletype_smoothGround))
+                    found = TRUE;
+                y++;
+            }
+            x++;
+        }
+        if (!found)
+        {
+            MAP_ITEMS[i].type = itemType_noItem;
+        }
+    }
+
+    for (int i = 0; i < max_mapChests; i++)
+    {
+        int y = 0;
+        BOOL found = FALSE;
+        while (y < GAME_MAP_HEIGHT && !found)
+        {
+            int x = 0;
+            while (x < GAME_MAP_WIDTH && !found)
+            {
+                if (getMapWall(x, y).type == wallTiletype_chest && getMapWall(x, y).containedID == i)
+                    found = TRUE;
+                x++;
+            }
+            y++;
+        }
+        if (!found)
+        {
+            MAP_CHESTS[i].isUsed = FALSE;
+        }
+    }
+
+}
+
 void createDemoLevel()
 {
-	clearMap();
-	clearTraps();
+    clearRegisters();
     createRoom({ 10, 10 }, { 10, 10 }, doorSideRight, wallTiletype_roughWall, material_dolomite, groundTiletype_smoothGround, material_birchWood);
     addItemToMap(createItem(itemType_sword, material_platinum, itemQuality_fine), { 10, 10 });
     addItemToMap(createItem(itemType_helmet, material_platinum, itemQuality_fine), { 10, 10 });
@@ -18,18 +92,6 @@ void createDemoLevel()
     addItemToChest(chest1Location, createItem(itemType_coin, material_gold, itemQuality_high));
     addItemToChest(chest1Location, createItem(itemType_coin, material_gold, itemQuality_high));
     addItemToMap(createItem(itemType_pickaxe, material_platinum, itemQuality_high), {7, 7});
-
-    for (int i = 0; i < 20; i++)
-    {
-        createRoom( { rand() % 20 + 10 * 10, rand() % 60 }, { rand() % 10 + 2, rand() % 10 + 2 }, rand() % 4, rand() % 2+1, rand() % 4, rand() % 2+1, rand() % 3);
-        Item item = createItem(rand() % 25, rand() % 10, rand() % 7);
-        if (rand()% 6< 2)
-        { 
-            addEnchantToItem(&item, createEnchant(rand() % 12+1, rand() % 3+1, rand() % 6+1));
-        }
-        addItemToMap(item, { rand() % 20 + 10 * 10, rand() % 60 });
-    }
-
 
     int i = 0;
     while (i < GAME_MAP_HEIGHT-10)
@@ -67,11 +129,14 @@ void createDemoLevel()
         addSpawner(createSpawner(rand()%4+1, 1, 10, {rand() % GAME_MAP_WIDTH, rand() % GAME_MAP_HEIGHT}, rand() % 20, 7));
     }
 
-    for (int i = 0; i < 10; i++)
+    addItemToInventory(createItem(itemType_pickaxe, material_platinum, itemQuality_regular));
+    addItemToInventory(createItem(itemType_axe, material_platinum, itemQuality_regular));
+
+    for (int i = 0; i < 40; i++)
     {
         int chestLocation = placeNewChest({ rand() % 20 + 10 * 10, rand() % 60 }, rand() % 4);
 
-        for (int j = 0; j < rand() % 4+1; j++)
+        for (int j = 0; j < rand() % 4 + 1; j++)
         {
             Item item = createItem(rand() % 25, rand() % 10, rand() % 7);
             if (rand() % 6 < 2)
@@ -82,18 +147,27 @@ void createDemoLevel()
         }
     }
 
-    addItemToInventory(createItem(itemType_pickaxe, material_platinum, itemQuality_regular));
-    addItemToInventory(createItem(itemType_axe, material_platinum, itemQuality_regular));
+    for (int i = 0; i < 120; i++)
+    {
+        createRoom({ rand() % 20 + 10 * 10, rand() % 60 }, { rand() % 10 + 2, rand() % 10 + 2 }, rand() % 4, rand() % 2 + 1, rand() % 4, rand() % 2 + 1, rand() % 3);
+        Item item = createItem(rand() % 25, rand() % 10, rand() % 7);
+        if (rand() % 6 < 2)
+        {
+            addEnchantToItem(&item, createEnchant(rand() % 12 + 1, rand() % 3 + 1, rand() % 6 + 1));
+        }
+        addItemToMap(item, { rand() % 20 + 10 * 10, rand() % 60 });
+    }
 
     Vec2 goalRoomPos = { rand() % 110 + 10, rand() % 40 + 10 };
-    createRoom({ rand() % 110+10, rand() % 40+10 }, { 5, 5 }, doorSideLeft, wallTiletype_smoothWall, material_delganium, groundTiletype_smoothGround, material_platinum);
-    addItemToMap(createItem(itemType_stolenStaff, material_delganium, itemQuality_legendary), {120, 50});
-
+    createRoom({ rand() % 110 + 10, rand() % 40 + 10 }, { 5, 5 }, doorSideLeft, wallTiletype_smoothWall, material_delganium, groundTiletype_smoothGround, material_platinum);
     Vec2 startingPositon = { rand() % (GAME_MAP_WIDTH - 20) + 10, rand() % (GAME_MAP_HEIGHT - 20) + 10 };
     player.position = startingPositon;
     createRoom(startingPositon, { 5, 5 }, doorSideBottom, wallTiletype_roughWall, material_quartz, groundTiletype_smoothGround, material_cherryWood);
     createMapRectangle(startingPositon, { 3, 3 }, onWalls, createTile(material_noMaterial, wallTiletype_noWall, material_noMaterial, 0));
+    addItemToMap(createItem(itemType_stolenStaff, material_delganium, itemQuality_legendary), goalRoomPos);
 
+    wallOut();
+    cleanRegisters();
 }
 
 void createTestingLevel()
@@ -167,3 +241,4 @@ void createTestingLevel()
         }
     }
 }
+

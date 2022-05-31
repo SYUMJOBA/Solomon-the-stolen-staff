@@ -85,7 +85,7 @@ int paintText(int number, Vec2 start) //returns the length of the printed char a
     {
         game_screen[start.Y * screen_width + start.X + x].Char.UnicodeChar = text[x];
     }
-    return strlen(text);
+    return (int)strlen(text);
 }
 
 void paintText(double number, Vec2 start)

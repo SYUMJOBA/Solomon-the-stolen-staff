@@ -1,9 +1,28 @@
 #include "deps/console_engine.h"
 #include <time.h>
 
+
+/*
+Copyright [2022] [John Baxter]
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+Solomon - The Stolen Staff
+*/
+
 int main(int argc, char const* argv[])
 {
-    srand(time(NULL));
+    srand((int)time(NULL));
     setupGame();
 
     BOOL running = TRUE;
@@ -305,8 +324,8 @@ int main(int argc, char const* argv[])
                         paintText("Go to stats (NIY)", { 14, 12 });
                         paintText("Exit to menu (YOU'LL LOOSE ALL PROGRESS!)", { 14, 14 });
                         paintText("Save game", { 14, 16 });
-                        paintRectangle(Fg_Grey, { 14, 10 }, { 30, 16 });
-                        paintLine(Fg_White, { 14, 10 + miniMenuChoice * 2 }, 20);
+                        paintRectangle(Fg_Grey, { 14, 10 }, { 80, 16 });
+                        paintLine(Fg_White, { 14, 10 + miniMenuChoice * 2 }, 69);
                         if (Input(Key_ESCAPE) == key_just_released)
                             miniMenu = FALSE;
 

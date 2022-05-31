@@ -53,7 +53,7 @@ void largeTextBox(const char * text, Attribute textColor){
     int startBoxX = (int)(screen_width/2 - strlen(text)/2-3);
     int startBoxY = (int)(screen_height/2 - 1)-3;
     int boxHeight = 5;
-    int boxWidth = 3*2 + strlen(text);
+    int boxWidth = 3*2 + (int)strlen(text);
 
     paintRectangle({' ', Fg_Grey}, {startBoxX, startBoxY}, {(startBoxX+boxWidth), (startBoxY+boxHeight)});
     frame(Fg_Grey, {startBoxX, startBoxY}, {(startBoxX+boxWidth), (startBoxY+boxHeight)});

@@ -348,7 +348,7 @@ int getEntityAmountFromPosition(Vec2 positon)
     int amount = 0;
     for (int i = 0; i < max_mapEntities; i++)
     {
-        if (MAP_ENTITIES[i].entityType != entityType_nothing && vec2cmp(positon, MAP_ENTITIES[i].position))
+        if (MAP_ENTITIES[i].entityType != entityType_nothing && positon.X == MAP_ENTITIES[i].position.X && positon.Y == MAP_ENTITIES[i].position.Y)
             amount++;
     }
     return amount;
