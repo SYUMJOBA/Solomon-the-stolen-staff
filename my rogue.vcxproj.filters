@@ -96,8 +96,16 @@
     <None Include="solomon.save" />
     <None Include="playdoc\doc.pdf" />
     <None Include="playdoc\stolen staff doc.html" />
+    <None Include="playdoc\docExtended.pdf" />
+    <None Include="playdoc\frontpage.pdf" />
+    <None Include="playdoc\frontpage.rtf" />
+    <None Include="mygame.save" />
+    <None Include="Floppy\guide.md" />
+    <None Include="Floppy\NOTICE" />
+    <None Include="Floppy\my rogue.exe" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="debug.txt" />
+    <Text Include="Floppy\license.txt" />
   </ItemGroup>
 </Project>

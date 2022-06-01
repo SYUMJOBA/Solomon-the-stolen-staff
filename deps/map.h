@@ -93,7 +93,7 @@ void clearTraps() {
 
 
 //generate a room with a center and a size var, procedural generation is slated for future update
-void createMapRectangle(Vec2 center, Vec2 size, int level, WorldTile wt)
+void createMapRectangle(Vec2 center, Vec2 size, int level, WorldTile worldTile)
 {
     Vec2 start = { center.X - size.X / 2, center.Y - size.Y / 2 };
     Vec2 end = { center.X + size.X / 2, center.Y + size.Y / 2 };
@@ -104,8 +104,8 @@ void createMapRectangle(Vec2 center, Vec2 size, int level, WorldTile wt)
         {
             for (int x = 0; x < size.X; x++)
             {
-                if (y * GAME_MAP_WIDTH + x < GAME_MAP_WIDTH*GAME_MAP_HEIGHT)
-                    getMapGround(x + start.X, y + start.Y) = wt;
+                if ( (y + start.X)* GAME_MAP_WIDTH + (x + start.X) < GAME_MAP_WIDTH*GAME_MAP_HEIGHT)
+                    getMapGround(x + start.X, y + start.Y) = worldTile;
             }
         }
     }
@@ -114,7 +114,8 @@ void createMapRectangle(Vec2 center, Vec2 size, int level, WorldTile wt)
         {
             for (int x = 0; x < size.X; x++)
             {
-                getMapWall(x + start.X, y + start.Y) = wt;
+                if ((y + start.X) * GAME_MAP_WIDTH + (x + start.X) < GAME_MAP_WIDTH * GAME_MAP_HEIGHT)
+                    getMapWall(x + start.X, y + start.Y) = worldTile;
             }
         }
     }

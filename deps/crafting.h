@@ -171,22 +171,11 @@ void setupCrafting()
     addRecipeItem(&RECIPES_STRUCTURES[0], createRepresentation(materialProp_incendiary | materialProp_type(materialType_rock), itemType_undefined), 0);
     RECIPES_STRUCTURES[1] = createCraftingRecipe("build craftbench", structureType_craftingStation, createRepresentation(materialProp_type(materialType_wood), itemType_logs), 4);
     RECIPES_STRUCTURES[2] = createCraftingRecipe("build furnace ", structureType_furnaceStation, createRepresentation(materialProp_type(materialType_rock), itemType_undefined), 8);
-    
-    setupLog();
-    addDebugLog("requiredFlags: \n");
-    addBinaryNumberToLog(GAME_CRAFTING_RECIPES[craftingCategory_structures][0].recipe[0].flagsRequired);
-    addDebugLog("water type flags: \n");
-    addBinaryNumberToLog(materialProp_type(materialtype_water));
-    addDebugLog("wood type flags: \n");
-    addBinaryNumberToLog(materialProp_type(materialType_wood));
-    closeDebug();
-
     //handmade recipes
 
     //craftbench recipes
 
     //building recipes
-
 }
 
 int getRecipesLength(int category)

@@ -73,6 +73,17 @@ void cleanRegisters()
         }
     }
 
+    
+
+    for (int i = 0; i < max_mapTraps; i++)
+    {
+        if (MAP_TRAPS[i].position.X != -1 && MAP_TRAPS[i].position.Y != -1)
+            if (getMapWall(MAP_TRAPS[i].position.X, MAP_TRAPS[i].position.Y).type != wallTiletype_noWall)
+                MAP_TRAPS[i].discovered = FALSE;
+                MAP_TRAPS[i].effect.enchantID = enchantType_none;
+                MAP_TRAPS[i].position = { -1, -1 }; //effectively nullifies the trap 
+    }
+
 }
 
 void createDemoLevel()
